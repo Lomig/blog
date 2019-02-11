@@ -1,0 +1,291 @@
+/* ==========================================================================
+   Grid
+   ========================================================================== */
+
+// Defining number of columns in the grid.
+// Common Values would be 12, 16 or 24
+$width: 100%;
+$def_grid: 12;
+$margin: 0;
+
+@mixin container(){
+  margin:0 auto;
+  width:$width;
+}
+                                      
+// Works out the width of elements based
+// on total number of columns and width
+// number of columns being displayed.
+// Removes 20px for margins
+@mixin grid($grid:$def_grid,$cols:'',$float:left,$display:inline){
+  display:$display;
+  float:$float;
+  width:(100%/$grid * $cols) - ($margin * 2);
+}  
+
+// Allows for padding before element
+@mixin prefix($grid:$def_grid,$cols:''){
+  margin-left:(100%/$grid * $cols);
+}
+
+// Allows for padding after element
+@mixin suffix($grid:$def_grid,$cols:''){  
+  margin-right:(100%/$grid * $cols);    
+}
+
+// Removes left margin
+@mixin first(){
+  margin-left:0;
+}
+
+// Removes right margin
+@mixin last(){
+  margin-right:0;
+}
+
+@mixin push($grid:$def_grid,$move:'') {
+  position:relative;
+  left:(100%/$grid * $move);
+} 
+
+@mixin pull($grid:$def_grid,$move:''){
+  position:relative;
+  left:(100%/$grid * $move) * -1;
+}
+
+
+$column: golden-ratio(1em, 3) !default; // Column width
+$gutter: golden-ratio(1em, 1) !default; // Gutter between each two columns
+$grid-columns: 12 !default; // Total number of columns in the grid
+$max-width: em(1088) !default; // Max-width of the outer container
+$border-box-sizing: true !default; // Makes all elements have a border-box layout
+$default-feature: min-width; // Default @media feature for the breakpoint() mixin
+$default-layout-direction: LTR !default;
+
+$prefix-for-webkit:    true !default;
+$prefix-for-mozilla:   true !default;
+$prefix-for-microsoft: true !default;
+$prefix-for-opera:     true !default;
+$prefix-for-spec:      true !default;
+
+$black: #000;
+
+@mixin row($display: block, $direction: $default-layout-direction) {
+  @include clearfix;
+  $layout-direction: $direction !global;
+
+  @if $display == table {
+    display: table;
+    @include fill-parent;
+    table-layout: fixed;
+    $container-display-table: true !global;
+  }
+
+  @else {
+    display: block;
+    $container-display-table: false !global;
+  }
+}
+
+@mixin clearfix {
+  &:after {
+    content:"";
+    display:table;
+    clear:both;
+  }
+}
+
+@function container-span($span: $span) {
+  @if length($span) == 3 {
+    $container-columns: nth($span, 3);
+    @return $container-columns;
+  }
+
+  @else if length($span) == 2 {
+    $container-columns: nth($span, 2);
+    @return $container-columns;
+  }
+
+  @else {
+    @return $grid-columns;
+  }
+}
+
+@mixin span-columns($span: $columns of $container-columns, $display: block) {
+  $columns: nth($span, 1);
+  $container-columns: container-span($span);
+
+  // Set nesting context (used by shift())
+  $parent-columns: get-parent-columns($container-columns) !global;
+
+  $direction: get-direction($layout-direction, $default-layout-direction);
+  $opposite-direction: get-opposite-direction($direction);
+
+  $display-table: is-display-table($container-display-table, $display);
+
+  @if $display-table  {
+    display: table-cell;
+    width: percentage($columns / $container-columns);
+  } @else {
+    float: #{$opposite-direction};
+
+    @if $display != no-display {
+      display: block;
+    }
+
+    @if $display == collapse {
+      @warn "The 'collapse' argument will be deprecated. Use 'block-collapse' instead."
+    }
+
+    @if $display == collapse or $display == block-collapse {
+      width: flex-grid($columns, $container-columns) + flex-gutter($container-columns);
+
+      &:last-child {
+        width: flex-grid($columns, $container-columns);
+      }
+
+    } @else {
+      margin-#{$direction}: flex-gutter($container-columns);
+      width: flex-grid($columns, $container-columns);
+
+      &:last-child {
+        margin-#{$direction}: 0;
+      }
+    }
+  }
+}
+
+@mixin omega($query: block, $direction: default) {
+  $table: if(belongs-to(table, $query), true, false);
+  $auto: if(belongs-to(auto, $query), true, false);
+
+  @if $direction != default {
+    @warn "The omega mixin will no longer take a $direction argument. To change the layout direction, use row($direction) or set $default-layout-direction instead."
+  } @else {
+    $direction: get-direction($layout-direction, $default-layout-direction);
+  }
+
+  @if $table {
+    @warn "The omega mixin no longer removes padding in table layouts."
+  }
+
+  @if length($query) == 1 {
+    @if $auto {
+      &:last-child {
+        margin-#{$direction}: 0;
+      }
+    }
+
+    @else if contains-display-value($query) and $table == false {
+      margin-#{$direction}: 0;
+    }
+
+    @else {
+      @include nth-child($query, $direction);
+    }
+  }
+
+  @else if length($query) == 2 {
+    @if $auto {
+      &:last-child {
+        margin-#{$direction}: 0;
+      }
+    }
+
+    @else {
+      @include nth-child(nth($query, 1), $direction);
+    }
+  }
+
+  @else {
+    @warn "Too many arguments passed to the omega() mixin."
+  }
+}
+
+@mixin nth-child($query, $direction) {
+  $opposite-direction: get-opposite-direction($direction);
+
+  &:nth-child(#{$query}) {
+    margin-#{$direction}: 0;
+  }
+
+  @if type-of($query) == number {
+    &:nth-child(#{$query}+1) {
+      clear: $opposite-direction;
+    }
+  }
+}
+
+@mixin animation ($animations...) {
+  @include prefixer(animation, $animations, webkit moz spec);
+}
+
+@mixin fill-parent() {
+  width: 100%;
+
+  @if $border-box-sizing == false {
+    @include box-sizing(border-box);
+  }
+}
+
+@mixin box-sizing ($box) {
+//  content-box | border-box | inherit
+  @include prefixer(box-sizing, $box, webkit moz spec);
+}
+
+@mixin prefixer ($property, $value, $prefixes) {
+  @each $prefix in $prefixes {
+    @if $prefix == webkit {
+      @if $prefix-for-webkit {
+        -webkit-#{$property}: $value;
+      }
+    }
+    @else if $prefix == moz {
+      @if $prefix-for-mozilla {
+        -moz-#{$property}: $value;
+      }
+    }
+    @else if $prefix == ms {
+      @if $prefix-for-microsoft {
+        -ms-#{$property}: $value;
+      }
+    }
+    @else if $prefix == o {
+      @if $prefix-for-opera {
+        -o-#{$property}: $value;
+      }
+    }
+    @else if $prefix == spec {
+      @if $prefix-for-spec {
+        #{$property}: $value;
+      }
+    }
+    @else  {
+      @warn "Unrecognized prefix: #{$prefix}";
+    }
+  }
+}
+
+.th-grid {
+  @include row($direction: LTR);
+  @include clearfix;
+  margin: 0;
+  padding: 0;
+  li {
+    list-style: none;
+    @include span-columns(3);
+    @include omega(4n);
+    margin-bottom: flex-gutter($grid-columns);
+  }
+  a {
+    img {
+      // Image hover animation
+      &:hover {
+        @include animation(pop .3s 0 linear);
+        box-shadow: 0 0 10px rgba($black, .20);
+      }
+    }
+  }
+}
+
+

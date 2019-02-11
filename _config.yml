@@ -1,0 +1,88 @@
+title:            The Wondrous Lomig's Bazaaric Blog
+description:      "Là où je raconte n’importe quoi sur tout, et vice versa."
+disqus_shortname: baradoz
+reading_time:     true
+words_per_minute: 200
+# Your site's domain goes here (eg: https://mmistakes.github.io, http://yourdomain.com, etc)
+url:
+
+# Owner/author information
+owner:
+  name:           Lomig Enfroy
+  avatar:         avatar.jpg
+  bio:            "Faux cynique, vrai gentil, critique, logique, pro transparence et énonceur de vérités éhonté."
+  email:          you@email.com
+  twitter:        dunwael
+  facebook:       Lomick
+  github:         Lomig
+
+background: 
+
+# Analytics and webmaster tools stuff goes here
+google_analytics:   
+google_verify:      
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+bing_verify:         
+
+timezone:    Europe/Paris
+future:      false  # publish future dated posts --  true, false (default) 
+highlighter: rouge
+markdown:    kramdown
+plugins:
+  - jekyll-sitemap
+  - jekyll-paginate
+  - jekyll-gist
+  - jekyll-feed
+  - jekyll-minifier
+sass:
+  sass_dir: _sass
+  style: compressed
+
+jekyll-minifier:
+  uglifier_args:
+    harmony: true
+
+permalink:   /:categories/:year/:month/:day/:title/
+
+# Amount of post to show on home page
+paginate: 5
+excerpt_separator: '<a name="Read-more"></a>'
+
+kramdown:
+  input: GFM
+  auto_ids: true
+  footnote_nr: 1
+  entity_output: as_char
+  toc_levels: 1..6
+  enable_coderay: false
+
+include: 
+  - .htaccess
+exclude: 
+  - "*.less"
+  - "*.sublime-project"
+  - "*.sublime-workspace"
+  - .asset-cache
+  - .bundle
+  - .jekyll-assets-cache
+  - .sass-cache
+  - CHANGELOG
+  - Capfile
+  - Gemfile
+  - Gruntfile.js
+  - LICENSE
+  - README
+  - Rakefile
+  - config
+  - gulpfile.js
+  - lib
+  - log
+  - node_modules
+  - package.json
+  - spec
+  - tmp
+
+collections:
+  recettes:
+    output: true
+    permalink: /:collection/:categories/:name

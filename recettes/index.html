@@ -1,0 +1,9 @@
+---
+layout: post-index
+title: Recettes de cuisine
+description: "Toutes les recettes du site."
+comments: false
+image:
+  feature: abstract-1.jpg
+---
+{% for recette in site.recettes %} {% include grid.html %} {% endfor %}

@@ -1,0 +1,16 @@
+/* ==========================================================================
+   Recettes -- Liste Ingrédients
+   ========================================================================== */
+#recette .ingredients {
+	position: relative;
+	top: 10px;
+	background-color: #434a54;
+	color: #fff;
+	margin-top: 1.5em;
+	margin-right: -25%;
+	padding-left: 15px;
+	padding-right: 15px;
+	display: inline-block;
+	float: right;
+	transform: translate(10px, -1em);
+}
